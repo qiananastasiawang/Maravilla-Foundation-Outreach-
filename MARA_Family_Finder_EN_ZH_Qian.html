@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MARA Weatherization Family Finder</title>
+<style>
+:root{--bg:#f4f7f5;--card:#fff;--ink:#183128;--muted:#66756f;--line:#dbe5e0;--accent:#176b4b;--soft:#e9f4ee;--warn:#fff5d8}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+.wrap{max-width:620px;margin:auto;padding:18px 16px 44px}.brand{font-weight:800;font-size:15px;letter-spacing:.02em;margin:8px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 30px rgba(24,49,40,.06)}
+.lang{display:flex;gap:8px;margin-bottom:18px}.lang button{flex:1;background:#fff;color:var(--ink);border:1px solid var(--line)}
+.lang button.active{background:var(--ink);color:#fff}
+.progress{height:7px;background:#e7ece9;border-radius:99px;overflow:hidden;margin-bottom:24px}.bar{height:100%;background:var(--accent);width:12.5%;transition:.25s}
+h1{font-size:29px;line-height:1.08;margin:0 0 10px}h2{font-size:24px;margin:0 0 10px}.sub{color:var(--muted);line-height:1.5;margin:0 0 22px}
+label{display:block;font-weight:750;margin:16px 0 8px}input,select{width:100%;font:inherit;font-size:18px;padding:15px;border:1px solid #bccbc4;border-radius:13px;background:#fff;color:var(--ink)}
+button,.btn{display:block;width:100%;border:0;border-radius:13px;padding:15px 16px;font:inherit;font-weight:800;font-size:17px;text-align:center;text-decoration:none;cursor:pointer;background:var(--accent);color:#fff;margin-top:12px}
+.secondary{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)!important}.screen{display:none}.screen.active{display:block}
+.note{background:var(--soft);border-radius:13px;padding:13px 14px;font-size:14px;line-height:1.45;margin:16px 0}.warn{background:var(--warn)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.check{display:flex;gap:10px;align-items:flex-start;margin-top:18px}.check input{width:auto;margin-top:4px}
+.result{font-size:28px;font-weight:900;margin:8px 0}.small{font-size:13px;color:var(--muted);line-height:1.45}.contact{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}.contact strong{display:block}
+.badge{display:inline-block;background:var(--soft);padding:7px 10px;border-radius:99px;font-size:13px;font-weight:800;margin-bottom:12px}
+.footer{font-size:12px;color:var(--muted);line-height:1.45;margin-top:18px}
+@media(max-width:420px){.card{padding:20px 18px}.row{grid-template-columns:1fr}h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">MARAVILLA FOUNDATION · WEATHERIZATION FAMILY FINDER</div>
+  <div class="card">
+    <div class="lang"><button id="enBtn" class="active" onclick="setLang('en')">English</button><button id="zhBtn" onclick="setLang('zh')">中文</button></div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+
+    <section class="screen active" data-step="0">
+      <h1 data-en="Lower Your Energy Bills" data-zh="降低您的能源账单"></h1>
+      <p class="sub" data-en="You may qualify for no-cost home energy improvements through Maravilla Foundation's Weatherization program. Answer a few simple questions for a preliminary screening." data-zh="您可能符合 Maravilla Foundation Weatherization 免费家庭节能改善项目的条件。请回答几个简单问题进行初步筛选。"></p>
+      <button onclick="next()" data-en="Check Eligibility" data-zh="检查资格"></button>
+    </section>
+
+    <section class="screen" data-step="1">
+      <h2 data-en="Enter your ZIP Code" data-zh="请输入您的邮政编码"></h2>
+      <p class="sub" data-en="Maravilla serves only specific ZIP codes. Your ZIP will be used to verify the service area." data-zh="Maravilla 仅服务指定的邮政编码。系统将使用您的 ZIP Code 自动确认服务区域。"></p>
+      <input id="zip" inputmode="numeric" maxlength="5" placeholder="90022">
+      <div class="note" data-en="East Los Angeles is not excluded. Any ZIP appearing on Maravilla's official service-area list is served." data-zh="只要 ZIP Code 出现在 Maravilla 官方服务区域表中，即属于服务范围。"></div>
+      <button onclick="validateZip()" data-en="Continue" data-zh="继续"></button>
+      <button class="secondary" onclick="back()" data-en="Back" data-zh="返回"></button>
+    </section>
+
+    <section class="screen" data-step="2">
+      <h2 data-en="Household Size" data-zh="家庭人数"></h2>
+      <p class="sub" data-en="How many people live in your household?" data-zh="您的家庭共有多少人？"></p>
+      <input id="hh" type="number" min="1" max="30" inputmode="numeric" placeholder="1">
+      <button onclick="need('hh')" data-en="Continue" data-zh="继续"></button><button class="secondary" onclick="back()" data-en="Back" data-zh="返回"></button>
+    </section>
+
+    <section class="screen" data-step="3">
+      <h2 data-en="Household Income — Last 30 Days" data-zh="家庭收入 — 最近30天"></h2>
+      <p class="sub" data-en="What was the total household income received during the last 30 days?" data-zh="您的家庭在最近30天内收到的总收入是多少？"></p>
+      <label data-en="Total Income" data-zh="总收入"></label>
+      <input id="income" type="number" min="0" step="0.01" inputmode="decimal" placeholder="$">
+      <div class="note" data-en="This is a preliminary screening only. Maravilla staff will determine which income documents are required." data-zh="这只是初步筛选。Maravilla 工作人员将确认需要提供哪些收入证明文件。"></div>
+      <button onclick="screenIncome()" data-en="Check Preliminary Eligibility" data-zh="检查初步资格"></button><button class="secondary" onclick="back()" data-en="Back" data-zh="返回"></button>
+    </section>
+
+    <section class="screen" data-step="4">
+      <div id="preBadge" class="badge"></div>
+      <h2 data-en="Contact Information" data-zh="联系信息"></h2>
+      <p class="sub" data-en="A Weatherization representative can help you with the next step." data-zh="Weatherization 工作人员可以帮助您完成下一步。"></p>
+      <label data-en="First Name" data-zh="名字"></label><input id="first">
+      <label data-en="Phone Number" data-zh="电话号码"></label><input id="phone" type="tel">
+      <label data-en="Email" data-zh="电子邮箱"></label><input id="email" type="email">
+      <label data-en="Preferred Language" data-zh="首选语言"></label>
+      <select id="pref"><option value="English">English</option><option value="中文">中文</option></select>
+      <div class="check"><input id="consent" type="checkbox"><span data-en="I agree that Maravilla Foundation may contact me about Weatherization services." data-zh="我同意 Maravilla Foundation 就 Weatherization 服务与我联系。"></span></div>
+      <button onclick="submitLead()" data-en="Submit" data-zh="提交"></button><button class="secondary" onclick="back()" data-en="Back" data-zh="返回"></button>
+    </section>
+
+    <section class="screen" data-step="5">
+      <div class="badge" data-en="PRELIMINARY SCREENING" data-zh="初步筛选"></div>
+      <div id="resultTitle" class="result"></div>
+      <p id="resultText" class="sub"></p>
+      <div id="zipVerification" class="note warn"></div>
+      <a class="btn" href="tel:+13235582027" data-en="CALL / TEXT QIAN · 323-558-2027" data-zh="致电 / 短信 QIAN · 323-558-2027"></a>
+      <a class="btn secondary" href="tel:+13238694605" data-en="CALL OFFICE · 323-869-4605" data-zh="致电办公室 · 323-869-4605"></a>
+      <a class="btn secondary" href="mailto:qwang@maravilla.org?subject=Weatherization%20Inquiry" data-en="EMAIL QIAN" data-zh="发送邮件给 QIAN"></a>
+      <button class="secondary" onclick="downloadCSV()" data-en="Download Lead Record (CSV)" data-zh="下载客户记录 (CSV)"></button>
+      <div class="contact"><strong>Maravilla Foundation</strong><strong>Qian Wang · Outreach & Eligibility Specialist</strong><span>Office: 323-869-4605 · Work Cell: 323-558-2027</span><br><span>qwang@maravilla.org</span></div>
+      <p class="footer" data-en="This tool does not approve or deny benefits. Final eligibility is determined by Maravilla Foundation under applicable LIHEAP requirements and documentation rules." data-zh="本工具仅用于初步筛选，不代表批准或拒绝福利。最终资格由 Maravilla Foundation 根据适用的 LIHEAP 要求及文件规定确定。"></p>
+    </section>
+  </div>
+</div>
+<script>
+let lang='en', step=0, prelim='', lead=null;
+const MARA_ZIPS=new Set(["90004", "90005", "90010", "90016", "90018", "90019", "90022", "90023", "90026", "90031", "90032", "90033", "90034", "90035", "90042", "90056", "90058", "90063", "90065", "90201", "90202", "90230", "90232", "90265", "90270", "90280", "90290", "90293", "90640", "91001", "91003", "91006", "91007", "91008", "91009", "91010", "91011", "91012", "91016", "91017", "91020", "91021", "91023", "91024", "91025", "91030", "91031", "91040", "91041", "91042", "91043", "91046", "91066", "91077", "91101", "91102", "91103", "91104", "91105", "91106", "91107", "91108", "91109", "91110", "91114", "91115", "91116", "91117", "91118", "91214", "91221", "91222", "91224", "91225", "91226", "91301", "91302", "91303", "91304", "91305", "91306", "91307", "91308", "91309", "91310", "91311", "91312", "91313", "91316", "91321", "91322", "91324", "91325", "91326", "91330", "91331", "91333", "91334", "91335", "91337", "91340", "91342", "91343", "91344", "91345", "91350", "91351", "91352", "91353", "91354", "91355", "91356", "91357", "91361", "91362", "91364", "91365", "91366", "91367", "91372", "91376", "91380", "91381", "91382", "91383", "91384", "91385", "91386", "91387", "91390", "91392", "91393", "91394", "91395", "91396", "91401", "91402", "91403", "91404", "91405", "91406", "91407", "91408", "91409", "91410", "91411", "91412", "91416", "91423", "91426", "91436", "91501", "91504", "91507", "91508", "91510", "91601", "91602", "91604", "91605", "91606", "91607", "91609", "91610", "91614", "91615", "91616", "91617", "91754", "91755", "91775", "91776", "91778", "91801", "91802", "91803", "93243", "93510", "93532", "93534", "93535", "93536", "93539", "93543", "93544", "93550", "93551", "93552", "93553", "93563", "93584", "93586", "93590", "93591"]);
+const limits={1:3331.66,2:4356.83,3:5382.00,4:6407.16,5:7432.25,6:8457.41,7:8649.66,8:8841.83,9:9034.08,10:9226.25};
+function t(en,zh){return lang==='en'?en:zh}
+function renderLang(){
+ document.documentElement.lang=lang;
+ document.querySelectorAll('[data-en]').forEach(x=>x.textContent=x.dataset[lang]);
+ enBtn.classList.toggle('active',lang==='en'); zhBtn.classList.toggle('active',lang==='zh');
+ document.getElementById('pref').value=lang==='en'?'English':'中文';
+ if(step===4) preBadge.textContent=prelim==='potential'?t('Potentially Eligible','可能符合资格'):t('Needs Review','需要人工审核');
+}
+function setLang(l){lang=l;renderLang()}
+function show(n){step=n;document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',+s.dataset.step===n));bar.style.width=((n+1)/6*100)+'%';renderLang();window.scrollTo(0,0)}
+function next(){show(step+1)} function back(){show(Math.max(0,step-1))}
+function validateZip(){
+ let z=zip.value.trim();
+ if(!/^\d{5}$/.test(z)){alert(t('Enter a valid 5-digit ZIP code.','请输入有效的5位 ZIP Code。'));return}
+ if(!MARA_ZIPS.has(z)){
+   alert(t('This ZIP is not listed in the official MARA service-area table (Rev. 8/2020). Please contact Maravilla Foundation if you believe this is incorrect.','该 ZIP Code 不在 MARA 官方服务区域表（Rev. 8/2020）中。如您认为有误，请联系 Maravilla Foundation。'));
+   return;
+ }
+ next()
+}
+function need(id){let e=document.getElementById(id);if(!e.value||+e.value<1){alert(t('Please complete this field.','请填写此项。'));return}next()}
+function incomeLimit(n){n=+n;if(n<=10)return limits[n];return limits[10]+(n-10)*192.21}
+function screenIncome(){if(income.value===''||+income.value<0){alert(t('Please enter the total income received during the last 30 days.','请输入最近30天收到的家庭总收入。'));return}
+ let lim=incomeLimit(hh.value); prelim=(+income.value<=lim)?'potential':'review';show(4)}
+function submitLead(){
+ if(!first.value.trim()||!phone.value.trim()){alert(t('First name and phone number are required.','名字和电话号码为必填项。'));return}
+ if(!consent.checked){alert(t('Please provide consent to be contacted.','请同意我们与您联系。'));return}
+ const lim=incomeLimit(hh.value);
+ lead={timestamp:new Date().toISOString(),zip:zip.value.trim(),household_size:+hh.value,last_30_days_income:+income.value,income_limit_2026:lim,preliminary_result:prelim==='potential'?'Potentially Eligible':'Needs Review',first_name:first.value.trim(),phone:phone.value.trim(),email:email.value.trim(),preferred_language:pref.value,consent:'Yes',lead_source:'Family Finder MVP',status:'New Lead',assigned_staff:'Qian Wang',zip_status:'MARA SERVICE AREA ✓'};
+ try{localStorage.setItem('mara_last_lead',JSON.stringify(lead))}catch(e){}
+ resultTitle.textContent=prelim==='potential'?t('YOU MAY QUALIFY','您可能符合资格'):t('NEEDS REVIEW','需要人工审核');
+ resultText.textContent=prelim==='potential'?t('Based on the household size and income entered, you are within the 2026 LIHEAP income screening limit. A representative can help verify the remaining requirements.','根据您输入的家庭人数和收入，您处于 2026 LIHEAP 初步收入筛选范围内。工作人员可以帮助确认其他要求。'):t('Your information should be reviewed by a Weatherization representative. This screening does not make a final eligibility decision.','您的信息需要由 Weatherization 工作人员进一步审核。本筛选不构成最终资格决定。');
+ zipVerification.textContent=t('MARA SERVICE AREA ✓ · ZIP '+lead.zip+' is listed in the official MARA ZIP table (Rev. 8/2020).','MARA 服务区域 ✓ · ZIP Code '+lead.zip+' 已列入 MARA 官方 ZIP 表（Rev. 8/2020）。');
+ show(5)
+}
+function downloadCSV(){
+ if(!lead)return;let keys=Object.keys(lead), esc=v=>'"'+String(v).replaceAll('"','""')+'"';
+ let csv=keys.map(esc).join(',')+'\n'+keys.map(k=>esc(lead[k])).join(',');
+ let b=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='MARA_Weatherization_Lead.csv';a.click();URL.revokeObjectURL(a.href)
+}
+renderLang();
+</script>
+</body></html>
